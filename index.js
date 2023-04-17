@@ -1,70 +1,70 @@
 "use strict";
-
-class GoedDoel {
-    #opbrengst = 0; 
+class Artikel {
     #naam;
-    #adres;
-    #contactpersonen=[];
-    constructor(naam, adres){
-        this.#opbrengst = 0;
+    #prijsExclusiefBTW;
+    #btwPercentage;
+    constructor(naam, prijsExclusiefBTW, btwPercentage) {
         this.#naam = naam;
-        this.#adres = adres;
+        this.#prijsExclusiefBTW = prijsExclusiefBTW;
+        this.#btwPercentage = btwPercentage;
     }
-    stort(bedrag) { 
-        this.#opbrengst += bedrag; 
-    } 
-    getOpbrengst() {
-        return this.#opbrengst;
+    getNaam() {
+        return this.#naam;
     }
-    getAdres() {
-        return this.#adres;
+    getPrijsExclusiefBTW() {
+        return this.#prijsExclusiefBTW;
     }
-    voegContactpersoonToe(persoon){
-        this.#contactpersonen.push(persoon);
+    getPrijsInclusiefBTW() {
+        return Number((this.#prijsExclusiefBTW *
+            (1 + this.#btwPercentage / 100)).toFixed(2));
     }
-    getContactpersonen(){
-        return this.#contactpersonen;
-    }
-}
-class Adres {
-    #straat;
-    #huisnummer;
-    #postcode;
-    #gemeente;    
-    constructor(straat , huisnummer, postcode, gemeente){
-        this.#straat = straat;
-        this.#huisnummer = huisnummer;
-        this.#postcode = postcode;
-        this.#gemeente = gemeente;
-    }
-    getVolledigAdres(){
-        return `${this.#straat} ${this.#huisnummer} ${this.#postcode} ${this.#gemeente}`;
+    getInfo(){
+        return `${this.#naam}: € ${this.getPrijsInclusiefBTW()}`;
     }
 }
-class Persoon {
-    #voornaam;
-    #familienaam;
-    constructor(voornaam, familienaam){
-        this.#voornaam = voornaam;
-        this.#familienaam = familienaam;
+class FoodArtikel extends Artikel {
+    #vervalPeriode;
+    constructor(naam, prijsExclusiefBTW, btwPercentage, vervalPeriode) {
+        super(naam, prijsExclusiefBTW, btwPercentage); 
+        this.#vervalPeriode = vervalPeriode;
     }
-    getNaam(){
-        return `${this.#voornaam} ${this.#familienaam}`;
+    getVervalPeriode() {
+        return this.#vervalPeriode;
+    }
+    getInfo(){
+        return `${super.getInfo()} vervalt na ${this.#vervalPeriode} dagen`
     }
 }
-/*const komOpTegenKanker = new GoedDoel();
-komOpTegenKanker.stort(100); 
-komOpTegenKanker.stort(200); 
-console.log(komOpTegenKanker.getOpbrengst());
-const cliniClowns = new GoedDoel();
-cliniClowns.stort(500); 
-console.log(cliniClowns.getOpbrengst());*/
+class NonFoodArtikel extends Artikel {
+    #garantiePeriode;
+    constructor(naam, prijsExclusiefBTW, btwPercentage, garantiePeriode) {
+        super(naam, prijsExclusiefBTW, btwPercentage);
+        this.#garantiePeriode = garantiePeriode;
+    }
+    getGarantiePeriode() {
+        return this.#garantiePeriode;
+    }
+    getInfo(){
+        return `${super.getInfo()}  heeft ${this.#garantiePeriode}`;
+    }
+}
+const appel = new FoodArtikel("appel", 0.3, 6, 7);
+console.log(appel.getNaam());
+console.log(appel.getPrijsInclusiefBTW());
+console.log(appel.getVervalPeriode());
+const koelkast = new NonFoodArtikel("koelkast", 300, 21, 3);
+console.log(koelkast.getNaam());
+console.log(koelkast.getPrijsInclusiefBTW());
+console.log(koelkast.getGarantiePeriode());
 
-const cliniClowns = new GoedDoel("CliniClowns" , new Adres("Prins Boudewijnlaaan","141",2610,"Wilrijk"));
+console.log(appel.getInfo());
+console.log(koelkast.getInfo());
 
-cliniClowns.voegContactpersoonToe(new Persoon("Arthur", "Janssens")); 
-cliniClowns.voegContactpersoonToe(new Persoon("Emma", "Peeters")); 
-console.log(cliniClowns.getAdres());
-for (const persoon of cliniClowns.getContactpersonen()) { 
-    console.log(persoon.getNaam()); 
+const artikels = [
+    new FoodArtikel("druif", 6 , 6, 7),
+    new NonFoodArtikel("papier", 10 , 21, 1),
+];
+
+for (const artikel of artikels){
+    console.log(artikel.getInfo());
 }
